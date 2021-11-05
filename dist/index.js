@@ -1,12 +1,13 @@
 class TodoModel {
     constructor() {
-        this.todos = [];
+        this.todos = JSON.parse(localStorage.getItem('todos') || '[]');
         this.nextTodoId = 1;
     }
     bindModelChangedHandler(handler) {
         this.modelChangedHandler = handler;
     }
     modelChanged(todos) {
+        localStorage.setItem('todos', JSON.stringify(todos));
         if (this.modelChangedHandler !== null) {
             this.modelChangedHandler(todos);
         }
@@ -96,6 +97,7 @@ class TodoController {
         this.view.bindTodoDeleteEvent((id) => {
             this.model.deleteTodo(id);
         });
+        this.view.updateTodosList(this.model.todos);
     }
 }
 const app = new TodoController(new TodoModel(), new TodoView());

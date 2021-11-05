@@ -5,7 +5,7 @@ interface ITodoItem {
 }
 
 class TodoModel {
-    private todos: ITodoItem[] = [];
+    public todos: ITodoItem[] = JSON.parse(localStorage.getItem('todos') || '[]');
     private nextTodoId = 1;
     private modelChangedHandler: (todos: ITodoItem[]) => void;
 
@@ -14,6 +14,8 @@ class TodoModel {
     }
 
     private modelChanged(todos: ITodoItem[]) {
+        localStorage.setItem('todos', JSON.stringify(todos));
+
         if (this.modelChangedHandler !== null) {
             this.modelChangedHandler(todos);
         }
@@ -113,18 +115,20 @@ class TodoController {
         this.model.bindModelChangedHandler((todos: ITodoItem[]) => {
             this.view.updateTodosList(todos);
         });
-
+        
         this.view.bindFormSubmitEvent((todoText: string) => {
             this.model.addTodo(todoText);
         });
-
+        
         this.view.bindTodoToggleEvent((id: number) => {
             this.model.toggleTodo(id);
         });
-
+        
         this.view.bindTodoDeleteEvent((id: number) => {
             this.model.deleteTodo(id);
         });
+
+        this.view.updateTodosList(this.model.todos);
     }
 }
 
